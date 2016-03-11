@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="initial-scale=1.0">
+    <style>
+    .selected {
+      background: yellow;
+    }
+    .not {
+      background: black;
+    }
+    </style>
+  </head>
+  <body>
+    <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+function updateDevices() {
+  $.getJSON( "/list", function( resp ) {
+    $( "#devs" ).empty();
+    $.each( resp.switches, function( key, value ) {
+      if ( value.state == 1) {
+        $( "#devs" ).append("<button class='selected'>*</button");
+      } else {
+        $( "#devs" ).append("<button class='not'>*</button>");
+      }
+      $( "#devs" ).append( "<button type='button' onclick='myclick(" + value.id + ",1);'>ON</button>\n" );
+      $( "#devs" ).append( "<button type='button' onclick='myclick(" + value.id + ",2);'>OFF</button>\n" );
+      $( "#devs" ).append( " " + value.name + "<br/>");
+    });
+  });
+}
+
+function myclick(deviceId, state) {
+  $.get( "/set", { device: deviceId, state: state }).done(updateDevices());
+}
+
+$( document ).ready(function() {
+  updateDevices();
+});
+
+</script>
+This it the file
+<div id="devs"></div>
+</body>
+</html>
