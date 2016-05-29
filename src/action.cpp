@@ -40,9 +40,9 @@ void Action::saveSensorData(const char* id, const char* value, const char* type)
   printf("%s: %s %s\n", type, id, value);
 
   sprintf(filename, "%s/%s", type, id);
-  //file = fopen(filename, "w");
-  //fprintf(file, "%s", value);
-  //fclose(file);
+  file = fopen(filename, "w");
+  fprintf(file, "%s", value);
+  fclose(file);
 
 }
 

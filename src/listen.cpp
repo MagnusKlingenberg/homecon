@@ -44,25 +44,27 @@ void Listener::list_request_cb(struct evhttp_request *req, void *arg) {
 
 void Listener::set_request_cb(struct evhttp_request *req, void *arg) {
   Events* event = (Events*) arg;
+  const char* uri;
   struct evbuffer  *out_buf       = evbuffer_new();
   struct evkeyvalq *output_header = evhttp_request_get_output_headers(req);
-  struct evkeyvalq *input_header;
+  struct evkeyvalq input_header;
   int device_id;
   int state;
 
   evhttp_add_header(output_header, "Content-Type", "application/json");
 
   //Find the device id
-  evhttp_parse_query(evhttp_request_get_uri(req),input_header);
-  device_id = atoi(evhttp_find_header(input_header, "device"));
-  state     = atoi(evhttp_find_header(input_header, "state"));
+  uri = evhttp_request_get_uri(req);
+  evhttp_parse_query(uri,&input_header);
+  device_id = atoi(evhttp_find_header(&input_header, "device"));
+  state     = atoi(evhttp_find_header(&input_header, "state"));
 
   evbuffer_add_printf(out_buf, "Got device: %d State: %d\n", device_id, state);
   event->setState(device_id, state);
 
   //Send it off
   evhttp_send_reply(req, 200, "OK", out_buf);
-  evhttp_clear_headers(input_header);
+  evhttp_clear_headers(&input_header);
   evhttp_clear_headers(output_header);
   evbuffer_free(out_buf);
 }
